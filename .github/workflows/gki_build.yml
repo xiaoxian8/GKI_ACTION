@@ -4,82 +4,73 @@ on:
   workflow_dispatch:
     inputs:
       GKI_DEV:
-        description: 'GKI kernel branch, e.g., android14-6.1-2024-10'
+        description: 'GKI kernel branch (e.g., android14-6.1-2024-10)'
         required: true
         default: 'android14-6.1-2024-10'
-      SUKUSU:
+      SUKISU:
         description: 'Enable SukiSU Ultra?'
         required: true
         default: 'y'
         type: choice
-        options:
-          - y
-          - n
+        options: [y, n]
       APPLY_SSG:
         description: 'Enable SSG IO scheduler?'
         required: true
         default: 'n'
         type: choice
-        options:
-          - y
-          - n
+        options: [y, n]
       APPLY_SUSFS:
         description: 'Enable SUSFS?'
         required: true
         default: 'y'
         type: choice
-        options:
-          - y
-          - n
+        options: [y, n]
       APPLY_KPM:
         description: 'Enable KPM?'
         required: true
         default: 'y'
         type: choice
-        options:
-          - y
-          - n
+        options: [y, n]
       APPLY_BETTERNET:
         description: 'Enable network enhancements?'
         required: true
         default: 'y'
         type: choice
-        options:
-          - y
-          - n
+        options: [y, n]
       APPLY_BBR:
         description: 'Enable BBR congestion control?'
         required: true
         default: 'd'
         type: choice
-        options:
-          - y
-          - n
-          - d
+        options: [y, n, d]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup environment variables
-      run: |
-        echo "GKI_DEV=${{ github.event.inputs.GKI_DEV }}" >> $GITHUB_ENV
-        echo "SUKUSU=${{ github.event.inputs.SUKUSU }}" >> $GITHUB_ENV
-        echo "APPLY_SSG=${{ github.event.inputs.APPLY_SSG }}" >> $GITHUB_ENV
-        echo "APPLY_SUSFS=${{ github.event.inputs.APPLY_SUSFS }}" >> $GITHUB_ENV
-        echo "APPLY_KPM=${{ github.event.inputs.APPLY_KPM }}" >> $GITHUB_ENV
-        echo "APPLY_BETTERNET=${{ github.event.inputs.APPLY_BETTERNET }}" >> $GITHUB_ENV
-        echo "APPLY_BBR=${{ github.event.inputs.APPLY_BBR }}" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          echo "GKI_DEV=${{ github.event.inputs.GKI_DEV }}" >> $GITHUB_ENV
+          echo "SUKISU=${{ github.event.inputs.SUKUSU }}" >> $GITHUB_ENV
+          echo "APPLY_SSG=${{ github.event.inputs.APPLY_SSG }}" >> $GITHUB_ENV
+          echo "APPLY_SUSFS=${{ github.event.inputs.APPLY_SUSFS }}" >> $GITHUB_ENV
+          echo "APPLY_KPM=${{ github.event.inputs.APPLY_KPM }}" >> $GITHUB_ENV
+          echo "APPLY_BETTERNET=${{ github.event.inputs.APPLY_BETTERNET }}" >> $GITHUB_ENV
+          echo "APPLY_BBR=${{ github.event.inputs.APPLY_BBR }}" >> $GITHUB_ENV
 
-    - name: Build kernel
-      run: bash local/build.sh
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y curl bison flex make binutils dwarves git lld pahole zip perl gcc python3 python-is-python3 bc libssl-dev libelf-dev
 
-    - name: Upload kernel zip
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel
-        path: common/out/kernel.zip
+      - name: Run build script
+        run: |
+          chmod +x local/build.sh
+          bash -x local/build.sh
+
+      - name: Upload kernel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel
+          path: common/out/kernel.zip
