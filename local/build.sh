@@ -10,7 +10,7 @@ cd common
 git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git --depth=1
 git clone https://github.com/KernelSU-Next/kernel_patches.git --depth=1
 git clone https://github.com/xiaoxian8/AnyKernel3.git --depth=1
-export DEFCONFIG=${PWD}/arch/arm64/configs/gki_defconfig
+export DEFCONFIG_FILE=${PWD}/arch/arm64/configs/gki_defconfig
 
 #启用LTO优化
 cat >> "$DEFCONFIG_FILE" <<EOF
