@@ -24,7 +24,7 @@ CONFIG_KSU_MANUAL_HOOK=y
 EOF
 
 #=== 是否使用ssg io补丁
-if [[ "$APPLY_SSG" == "y" || "$APPLY_SSG" == "y" ]]; then
+if [[ "$APPLY_SSG" == "Y" || "$APPLY_SSG" == "y" ]]; then
   echo ">>>正在添加SSG IO调度"
   git clone https://github.com/xiaoxian8/ssg_patch.git --depth=1
   cp ssg_patch/* ./ -r
@@ -36,7 +36,7 @@ else
 fi
 
 #=== 选择KernelSU分支
-if [[ "$SUKUSU" == "Y" || "$SUKISU" == "y"]]; then
+if [[ "$SUKUSU" == "Y" || "$SUKISU" == "y" ]]; then
   curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
   git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git --depth=1
   patch -p1 < SukiSU_patch/hook/syscall_hooks.patch
