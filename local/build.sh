@@ -142,5 +142,16 @@ make ${args[@]} gki_defconfig
 make ${args[@]} Image.lz4 modules
 make ${args[@]} INSTALL_MOD_PATH=modules modules_install
 
-cd AnyKernel3
-zip -r9v ../out/kernel.zip *
+#打包内核
+if [[ "$APPLY_KPM" == "Y" || "$APPLY_KPM" == "y" ]]; then
+  
+  chmod +x SukiSU_patch/kpm/patch_linux
+  cp $(find out -type f  -name "Image") ./
+  SukiSU_patch/kpm/patch_linux
+  mv oImage AnyKernel3/Image
+  cd AnyKernel3
+  zip -r9v ../out/kernel.zip *
+else
+ cp $(find out -type f  -name "Image") ./AnyKernel3
+ cd AnyKernel3
+ zip -r9v ../out/kernel.zip *
