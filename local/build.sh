@@ -5,7 +5,7 @@ set -e
 sudo apt-get install curl bison flex make binutils dwarves git lld pahole zip perl make gcc python3 python-is-python3 bc libssl-dev libelf-dev -y
 
 #下载LLVM以及设置环境变量
-wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/LLVM-21.1.0-Linux-X64.tar.xz
+wget -q --show-progress https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/LLVM-21.1.0-Linux-X64.tar.xz
 tar -Jxf LLVM-21.1.0-Linux-X64.tar.xz
 export PATH=$PWD/LLVM-21.1.0-Linux-X64/bin:$PATH
 #=== 设置自定义参数 ===
