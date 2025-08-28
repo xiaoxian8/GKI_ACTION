@@ -43,17 +43,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl bison flex make binutils dwarves git lld pahole zip perl gcc python3 python-is-python3 bc libssl-dev libelf-dev
-
-      - name: Download LLVM
-        run: |
-          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/LLVM-21.1.0-Linux-X64.tar.xz
-          tar -Jxf LLVM-21.1.0-Linux-X64.tar.xz
-          echo "$PWD/LLVM-21.1.0-Linux-X64/bin" >> $GITHUB_PATH
-
       - name: Run build script
         run: |
           chmod +x local/build.sh
