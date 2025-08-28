@@ -11,6 +11,7 @@ git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git --depth=1
 git clone https://github.com/KernelSU-Next/kernel_patches.git --depth=1
 git clone https://github.com/xiaoxian8/AnyKernel3.git --depth=1
 export DEFCONFIG_FILE=${PWD}/arch/arm64/configs/gki_defconfig
+GKI_VERSION="gki-$(echo $GKI_DEV | cut -d'-' -f1-2)"
 
 #启用LTO优化
 cat >> "$DEFCONFIG_FILE" <<EOF
