@@ -130,7 +130,6 @@ fi
 
 #编译参数
 args=(-j$(nproc --all) O=out ARCH=arm64 LLVM=1 DEPMOD=depmod DTC=dtc)
-make ${args[@]} mrproper
 make ${args[@]} gki_defconfig
 make ${args[@]} Image.lz4 modules
 make ${args[@]} INSTALL_MOD_PATH=modules modules_install
