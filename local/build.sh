@@ -29,6 +29,8 @@ if [[ "$APPLY_SSG" = "y" || "$APPLY_SSG" = "y"]; then
   git clone https://github.com/xiaoxian8/ssg_patch.git --depth=1
   cp ssg_patch/* ./ -r
   patch -p1 < ssg.patch
+  echo "CONFIG_MQ_IOSCHED_SSG=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> "$DEFCONFIG_FILE"
 else
   echo ">>>跳过SSG IO补丁"
 fi
@@ -80,3 +82,58 @@ if [[ "$APPLY_KPM" = "Y" || "$APPLTY_KPM" = "y" ]]; then
   echo "CONFIG_KPM=y" >> $DEFCONFIG_FILE
 fi
 
+# ===== 启用网络功能增强优化配置 =====
+if [[ "$APPLY_BETTERNET" == "y" || "$APPLY_BETTERNET" == "Y" ]]; then
+  echo ">>> 正在启用网络功能增强优化配置..."
+  echo "CONFIG_BPF_STREAM_PARSER=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_NETFILTER_XT_SET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_MAX=65534" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IP=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_MAC=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_NET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP_SET_LIST_SET=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP6_NF_NAT=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$DEFCONFIG_FILE"
+fi
+
+# ===== 添加 BBR 等一系列拥塞控制算法 =====
+if [[ "$APPLY_BBR" == "y" || "$APPLY_BBR" == "Y" || "$APPLY_BBR" == "d" || "$APPLY_BBR" == "D" ]]; then
+  echo ">>> 正在添加 BBR 等一系列拥塞控制算法..."
+  echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_BBR=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_CUBIC=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_VEGAS=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_NV=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_WESTWOOD=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_HTCP=y" >> "$DEFCONFIG_FILE"
+  echo "CONFIG_TCP_CONG_BRUTAL=y" >> "$DEFCONFIG_FILE"
+  if [[ "$APPLY_BBR" == "d" || "$APPLY_BBR" == "D" ]]; then
+    echo "CONFIG_DEFAULT_TCP_CONG=bbr" >> "$DEFCONFIG_FILE"
+  else
+    echo "CONFIG_DEFAULT_TCP_CONG=cubic" >> "$DEFCONFIG_FILE"
+  fi
+fi
+
+#编译参数
+args=(-j$(nproc --all) O=out ARCH=arm64 LLVM=1 DEPMOD=depmod DTC=dtc)
+make ${args[@]} mrproper
+make ${args[@]} gki_defconfig
+make ${args[@]} Image.lz4 modules
+make ${args[@]} INSTALL_MOD_PATH=modules modules_install
+
+cd AnyKernel3
+zip -r9v ../out/kernel.zip *
