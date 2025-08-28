@@ -24,7 +24,7 @@ CONFIG_KSU_MANUAL_HOOK=y
 EOF
 
 #=== 是否使用ssg io补丁
-if [[ "$APPLY_SSG" = "y" || "$APPLY_SSG" = "y"]; then
+if [[ "$APPLY_SSG" == "y" || "$APPLY_SSG" == "y" ]]; then
   echo ">>>正在添加SSG IO调度"
   git clone https://github.com/xiaoxian8/ssg_patch.git --depth=1
   cp ssg_patch/* ./ -r
@@ -36,7 +36,7 @@ else
 fi
 
 #=== 选择KernelSU分支
-if [[ "$SUKUSU" = "Y" || "$SUKISU" = "y"]]; then
+if [[ "$SUKUSU" == "Y" || "$SUKISU" == "y"]]; then
   curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
   git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git --depth=1
   patch -p1 < SukiSU_patch/hook/syscall_hooks.patch
@@ -50,7 +50,7 @@ else
 fi
 
 #=== 是否启用susfs
-if [[ "$APPLY_SUSFS" = "Y" || "$APPLY_SUSFS" = "y"]]; then
+if [[ "$APPLY_SUSFS" == "Y" || "$APPLY_SUSFS" == "y" ]]; then
   git clone https://gitlab.com/simonpunk/susfs4ksu.git -b ${GKI_VERSION} --depth=1
   cp susfs4ksu/kernel_patches/fs ./ -r
   cp susfs4ksu/kernel_patches/include ./ -r 
@@ -74,11 +74,11 @@ if [[ "$APPLY_SUSFS" = "Y" || "$APPLY_SUSFS" = "y"]]; then
   CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
 EOF
 else
-  CONFIG_KSU_SUSFS=n >> "$DEFCONFIG_FILE"
+  echo "CONFIG_KSU_SUSFS=n" >> "$DEFCONFIG_FILE"
 fi
 
 #=== 是否启用KPM
-if [[ "$APPLY_KPM" = "Y" || "$APPLTY_KPM" = "y" ]]; then
+if [[ "$APPLY_KPM" == "Y" || "$APPLY_KPM" == "y" ]]; then
   echo "CONFIG_KPM=y" >> $DEFCONFIG_FILE
 fi
 
@@ -129,7 +129,7 @@ if [[ "$APPLY_BBR" == "y" || "$APPLY_BBR" == "Y" || "$APPLY_BBR" == "d" || "$APP
 fi
 
 #编译参数
-args=(-j$(nproc --all) O=out ARCH=arm64 LLVM=1 DEPMOD=depmod DTC=dtc)
+args=(-j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- LLVM=1 LLVM_IAS=1 DEPMOD=depmod DTC=dtc)
 make ${args[@]} gki_defconfig
 make ${args[@]} Image.lz4 modules
 make ${args[@]} INSTALL_MOD_PATH=modules modules_install
