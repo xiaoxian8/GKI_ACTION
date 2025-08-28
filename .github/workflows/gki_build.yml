@@ -1,44 +1,44 @@
-name: Build GKI Kernel
+name: GKI内核构建
 
 on:
   workflow_dispatch:
     inputs:
       GKI_DEV:
-        description: 'GKI kernel branch (e.g., android14-6.1-2024-10)'
+        description: '请输入gki内核分支(e.g., android14-6.1-2024-10)'
         required: true
         default: 'android14-6.1-2024-10'
       SUKISU:
-        description: 'Enable SukiSU Ultra?'
+        description: 'KernelSU分支'
         required: true
-        default: 'y'
+        default: 'SukiSU Ultra'
         type: choice
-        options: [y, n]
+        options: [SukiSU Ultra, Kernel Next]
       APPLY_SSG:
-        description: 'Enable SSG IO scheduler?'
+        description: '是否启用 SSG IO 调度'
         required: true
         default: 'n'
         type: choice
         options: [y, n]
       APPLY_SUSFS:
-        description: 'Enable SUSFS?'
+        description: '是否启用 SUSFS'
         required: true
         default: 'y'
         type: choice
         options: [y, n]
       APPLY_KPM:
-        description: 'Enable KPM?'
+        description: '是否启用 KPM'
         required: true
         default: 'y'
         type: choice
         options: [y, n]
       APPLY_BETTERNET:
-        description: 'Enable network enhancements?'
+        description: '是否启用网络优化'
         required: true
         default: 'y'
         type: choice
         options: [y, n]
       APPLY_BBR:
-        description: 'Enable BBR congestion control?'
+        description: '是否引入BBR网络阻塞算法'
         required: true
         default: 'd'
         type: choice
@@ -51,25 +51,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set environment variables
+      - name: 环境变量值
         run: |
           echo "GKI_DEV=${{ github.event.inputs.GKI_DEV }}" >> $GITHUB_ENV
-          echo "SUKISU=${{ github.event.inputs.SUKUSU }}" >> $GITHUB_ENV
+          echo "SUKISU=${{ github.event.inputs.SUKISU }}" >> $GITHUB_ENV
           echo "APPLY_SSG=${{ github.event.inputs.APPLY_SSG }}" >> $GITHUB_ENV
           echo "APPLY_SUSFS=${{ github.event.inputs.APPLY_SUSFS }}" >> $GITHUB_ENV
           echo "APPLY_KPM=${{ github.event.inputs.APPLY_KPM }}" >> $GITHUB_ENV
           echo "APPLY_BETTERNET=${{ github.event.inputs.APPLY_BETTERNET }}" >> $GITHUB_ENV
           echo "APPLY_BBR=${{ github.event.inputs.APPLY_BBR }}" >> $GITHUB_ENV
 
-      - name: Install dependencies
+      - name: 安装编译环境
         run: sudo apt-get update && sudo apt-get install -y curl bison flex make binutils dwarves git lld pahole zip perl gcc python3 python-is-python3 bc libssl-dev libelf-dev
 
-      - name: Run build script
+      - name: 执行编译脚本
         run: |
           chmod +x local/build.sh
           bash -x local/build.sh
 
-      - name: Upload kernel artifact
+      - name: 上传内核
         uses: actions/upload-artifact@v4
         with:
           name: kernel
