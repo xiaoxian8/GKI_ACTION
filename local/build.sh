@@ -59,7 +59,7 @@ fi
 
 #=== 是否启用susfs
 if [[ "$APPLY_SUSFS" == "Y" || "$APPLY_SUSFS" == "y" ]]; then
-  echo ">>> 正在启用susfs
+  echo ">>> 正在启用susfs"
   git clone https://gitlab.com/simonpunk/susfs4ksu.git -b ${GKI_VERSION} --depth=1
   cp susfs4ksu/kernel_patches/fs ./ -r
   cp susfs4ksu/kernel_patches/include ./ -r 
