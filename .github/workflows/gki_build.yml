@@ -1,55 +1,85 @@
-name: SukiSU Ultra，KernelSU Next构建
+name: Build GKI Kernel
 
 on:
   workflow_dispatch:
     inputs:
       GKI_DEV:
-        description: 'GKI 内核分支'
+        description: 'GKI kernel branch, e.g., android14-6.1-2024-10'
         required: true
         default: 'android14-6.1-2024-10'
       SUKUSU:
-        description: '是否使用 SukiSU'
-        required: false
+        description: 'Enable SukiSU Ultra?'
+        required: true
         default: 'y'
-      APPLY_SUSFS:
-        description: '是否启用 SUSFS'
-        required: false
-        default: 'y'
+        type: choice
+        options:
+          - y
+          - n
       APPLY_SSG:
-        description: '是否启用 SSG IO'
-        required: false
+        description: 'Enable SSG IO scheduler?'
+        required: true
         default: 'n'
-      APPLY_BBR:
-        description: '是否启用 BBR 拥塞控制'
-        required: false
-        default: 'd'
-      APPLY_BETTERNET:
-        description: '是否启用网络增强'
-        required: false
+        type: choice
+        options:
+          - y
+          - n
+      APPLY_SUSFS:
+        description: 'Enable SUSFS?'
+        required: true
         default: 'y'
+        type: choice
+        options:
+          - y
+          - n
+      APPLY_KPM:
+        description: 'Enable KPM?'
+        required: true
+        default: 'y'
+        type: choice
+        options:
+          - y
+          - n
+      APPLY_BETTERNET:
+        description: 'Enable network enhancements?'
+        required: true
+        default: 'y'
+        type: choice
+        options:
+          - y
+          - n
+      APPLY_BBR:
+        description: 'Enable BBR congestion control?'
+        required: true
+        default: 'd'
+        type: choice
+        options:
+          - y
+          - n
+          - d
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GKI_DEV: ${{ github.event.inputs.GKI_DEV }}
-      SUKUSU: ${{ github.event.inputs.SUKUSU }}
-      APPLY_SUSFS: ${{ github.event.inputs.APPLY_SUSFS }}
-      APPLY_SSG: ${{ github.event.inputs.APPLY_SSG }}
-      APPLY_BBR: ${{ github.event.inputs.APPLY_BBR }}
-      APPLY_BETTERNET: ${{ github.event.inputs.APPLY_BETTERNET }}
 
     steps:
-      - name: 检查储存库
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: 执行开始构建脚本
-        run: 
-          chmod +x local/build.sh
-          ./local/build.sh
+    - name: Setup environment variables
+      run: |
+        echo "GKI_DEV=${{ github.event.inputs.GKI_DEV }}" >> $GITHUB_ENV
+        echo "SUKUSU=${{ github.event.inputs.SUKUSU }}" >> $GITHUB_ENV
+        echo "APPLY_SSG=${{ github.event.inputs.APPLY_SSG }}" >> $GITHUB_ENV
+        echo "APPLY_SUSFS=${{ github.event.inputs.APPLY_SUSFS }}" >> $GITHUB_ENV
+        echo "APPLY_KPM=${{ github.event.inputs.APPLY_KPM }}" >> $GITHUB_ENV
+        echo "APPLY_BETTERNET=${{ github.event.inputs.APPLY_BETTERNET }}" >> $GITHUB_ENV
+        echo "APPLY_BBR=${{ github.event.inputs.APPLY_BBR }}" >> $GITHUB_ENV
 
-      - name: 上传内核
-        uses: actions/upload-artifact@v4
-        with:
-          name: kernel
-          path: common/out/kernel.zip
+    - name: Build kernel
+      run: bash local/build.sh
+
+    - name: Upload kernel zip
+      uses: actions/upload-artifact@v3
+      with:
+        name: kernel
+        path: common/out/kernel.zip
