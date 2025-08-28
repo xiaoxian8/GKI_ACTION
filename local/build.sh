@@ -12,6 +12,17 @@ git clone https://github.com/KernelSU-Next/kernel_patches.git --depth=1
 git clone https://github.com/xiaoxian8/AnyKernel3.git --depth=1
 export DEFCONFIG=${PWD}/arch/arm64/configs/gki_defconfig
 
+#启用LTO优化
+cat >> "$DEFCONFIG_FILE" <<EOF
+CONFIG_LTO_CLANG=y
+CONFIG_ARCH_SUPPORTS_LTO_CLANG=y
+CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y
+CONFIG_HAS_LTO_CLANG=y
+CONFIG_LTO_CLANG_THIN=y
+CONFIG_LTO=y
+CONFIG_KSU_MANUAL_HOOK=y
+EOF
+
 #=== 是否使用ssg io补丁
 if [[ "$APPLY_SSG" = "y" || "$APPLY_SSG" = "y"]; then
   echo ">>>正在添加SSG IO调度"
@@ -42,6 +53,24 @@ if [[ "APPLY_SUSFS" = "Y" || "APPLY_SUSFS" = "y"]]; then
   cp susfs4ksu/kernel_patches/fs ./ -r
   cp susfs4ksu/kernel_patches/include ./ -r 
   cp susfs4ksu/kernel_patches/50_add_susfs*.patch ./
-  patch -p1 < 50_add_susfs*.patch 
+  patch -p1 < 50_add_susfs*.patch
+  cat >> "$DEFCONFIG_FILE" <<EOF
+CONFIG_KSU_SUSFS=y
+CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
+CONFIG_KSU_SUSFS_SUS_PATH=y
+CONFIG_KSU_SUSFS_SUS_MOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+CONFIG_KSU_SUSFS_SUS_KSTAT=y
+#CONFIG_KSU_SUSFS_SUS_OVERLAYFS is not set
+CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+CONFIG_KSU_SUSFS_ENABLE_LOG=y
+CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+EOF
 else
-  
+  CONFIG_KSU_SUSFS=n >> "$DEFCONFIG_FILE"
+fi
