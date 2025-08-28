@@ -48,7 +48,7 @@ else
 fi
 
 #=== 选择KernelSU分支
-if [[ "$SUKISU" == "Y" || "$SUKISU" == "y" ]]; then
+if [[ "$SUKISU" == "SukiSU Ultra" ]]; then
   curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
   git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git --depth=1
   patch -p1 < SukiSU_patch/hook/syscall_hooks.patch
