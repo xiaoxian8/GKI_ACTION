@@ -1,4 +1,4 @@
-name: Build GKI Kernel
+name: SukiSU Ultra，KernelSU Next构建
 
 on:
   workflow_dispatch:
@@ -40,15 +40,15 @@ jobs:
       APPLY_BETTERNET: ${{ github.event.inputs.APPLY_BETTERNET }}
 
     steps:
-      - name: Checkout repository
+      - name: 检查储存库
         uses: actions/checkout@v4
 
-      - name: Run build script
-        run: |
+      - name: 执行开始构建脚本
+        run: 
           chmod +x local/build.sh
           ./local/build.sh
 
-      - name: Upload kernel zip
+      - name: 上传内核
         uses: actions/upload-artifact@v4
         with:
           name: kernel
