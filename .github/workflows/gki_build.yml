@@ -79,7 +79,7 @@ jobs:
       run: bash local/build.sh
 
     - name: Upload kernel zip
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kernel
         path: common/out/kernel.zip
