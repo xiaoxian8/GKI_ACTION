@@ -5,9 +5,9 @@ set -e
 sudo apt-get install curl bison flex make binutils dwarves git lld pahole zip perl make gcc python3 python-is-python3 bc libssl-dev libelf-dev -y
 
 #下载LLVM以及设置环境变量
-wget -q https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/LLVM-21.1.0-Linux-X64.tar.xz 
-tar -Jxf LLVM-21.1.0-Linux-X64.tar.xz
-export PATH=$PWD/LLVM-21.1.0-Linux-X64/bin:$PATH
+wget -q https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.8/LLVM-20.1.8-Linux-X64.tar.xz
+tar -Jxf LLVM-20.1.8-Linux-X64.tar.xz
+export PATH=$PWD/LLVM-20.1.8-Linux-X64/bin:$PATH
 #=== 设置自定义参数 ===
 echo "===gki内核自定义编译SukiSu Ultra,KernelSU Next脚本"
 
@@ -59,27 +59,28 @@ fi
 
 #=== 是否启用susfs
 if [[ "$APPLY_SUSFS" == "Y" || "$APPLY_SUSFS" == "y" ]]; then
+  echo ">>> 正在启用susfs
   git clone https://gitlab.com/simonpunk/susfs4ksu.git -b ${GKI_VERSION} --depth=1
   cp susfs4ksu/kernel_patches/fs ./ -r
   cp susfs4ksu/kernel_patches/include ./ -r 
   cp susfs4ksu/kernel_patches/50_add_susfs*.patch ./
   patch -p1 < 50_add_susfs*.patch
   cat >> "$DEFCONFIG_FILE" <<EOF
-  CONFIG_KSU_SUSFS=y
-  CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
-  CONFIG_KSU_SUSFS_SUS_PATH=y
-  CONFIG_KSU_SUSFS_SUS_MOUNT=y
-  CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
-  CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
-  CONFIG_KSU_SUSFS_SUS_KSTAT=y
-  #CONFIG_KSU_SUSFS_SUS_OVERLAYFS is not set
-  CONFIG_KSU_SUSFS_TRY_UMOUNT=y
-  CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
-  CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-  CONFIG_KSU_SUSFS_ENABLE_LOG=y
-  CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-  CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-  CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+CONFIG_KSU_SUSFS=y
+CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
+CONFIG_KSU_SUSFS_SUS_PATH=y
+CONFIG_KSU_SUSFS_SUS_MOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+CONFIG_KSU_SUSFS_SUS_KSTAT=y
+#CONFIG_KSU_SUSFS_SUS_OVERLAYFS is not set
+CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+CONFIG_KSU_SUSFS_ENABLE_LOG=y
+CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
 EOF
 else
   echo "CONFIG_KSU_SUSFS=n" >> "$DEFCONFIG_FILE"
