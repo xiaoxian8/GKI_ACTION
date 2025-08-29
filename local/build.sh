@@ -67,7 +67,7 @@ if [[ "$APPLY_SUSFS" == "Y" || "$APPLY_SUSFS" == "y" ]]; then
   cp susfs4ksu/kernel_patches/include ./ -r 
   cp susfs4ksu/kernel_patches/50_add_susfs*.patch ./
   patch -p1 < 50_add_susfs*.patch
-  cat >> "$DEFCONFIG_FILE" <<EOF
+cat >> "$DEFCONFIG_FILE" <<EOF
 CONFIG_KSU_SUSFS=y
 CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
 CONFIG_KSU_SUSFS_SUS_PATH=y
