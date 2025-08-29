@@ -61,8 +61,8 @@ jobs:
           echo "APPLY_BETTERNET=${{ github.event.inputs.APPLY_BETTERNET }}" >> $GITHUB_ENV
           echo "APPLY_BBR=${{ github.event.inputs.APPLY_BBR }}" >> $GITHUB_ENV
           
-          - name: 执行编译脚本
-          run: |
+      - name: 执行编译脚本
+        run: |
           chmod +x local/build.sh
           bash local/build.sh
 
