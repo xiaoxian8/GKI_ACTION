@@ -1,5 +1,4 @@
-#!/usr/bin/bash
-set -e
+#!/bin/bash
 
 #=== 安装依赖 ===
 sudo apt-get install curl bison flex make binutils dwarves git pahole zip perl make gcc python3 python-is-python3 bc libssl-dev libelf-dev -y
